@@ -1,7 +1,9 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router';
+import { createPinia } from "pinia";
 
+const pinia = createPinia()
 
 import { IonicVue, IonPage, IonTitle, IonCardTitle, IonCardSubtitle, IonContent, IonGrid, IonRow, IonCol, IonIcon, IonButton, IonCard, IonCardContent, IonCardHeader, IonModal, IonInput, IonList, IonItem, IonToolbar  } from '@ionic/vue';
 
@@ -26,7 +28,8 @@ import './theme/variables.css';
 
 const app = createApp(App)
   .use(IonicVue)
-  .use(router);
+  .use(router)
+  .use(pinia);
 
 app.component('ion-page', IonPage)
 app.component('ion-content', IonContent)

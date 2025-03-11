@@ -1,2 +1,6 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+
+ion-input {
+    border-bottom: solid 1px #737373;
+}
