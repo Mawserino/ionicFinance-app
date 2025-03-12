@@ -95,6 +95,11 @@ import { computed, ref, onMounted } from "vue";
 import { personOutline } from "ionicons/icons";
 import { userStore } from "@/store/user.js";
 import { useRouter } from "vue-router";
+import Cookies from "js-cookie"; // Import js-cookie
+
+const uid = Cookies.get("uid"); // Retrieve UID from cookies
+
+console.log("User UID:", uid);
 
 
 const store = userStore()
@@ -125,6 +130,7 @@ const OpenFundsModal = (isExpenses) => {
   isNewRecordWithExpenses.value = isExpenses;
   record.value = { comment: "", value: null }; // Reset form inputs
   isAddFundsModalOpen.value = true;
+  console.log("User UID:", uid);
 };
 
 const addFunds = () => {

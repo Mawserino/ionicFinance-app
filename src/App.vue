@@ -19,6 +19,10 @@
           <ion-menu-toggle auto-hide="true">
             <ion-item router-link="/setting">Setting</ion-item>
           </ion-menu-toggle>
+
+          <ion-menu-toggle auto-hide="true">
+            <ion-item router-link="/calendar">Calendar</ion-item>
+          </ion-menu-toggle>
           
           <ion-menu-toggle auto-hide="true">
             <ion-item button @click="logout">Logout</ion-item>  
@@ -37,11 +41,19 @@ import { IonApp, IonRouterOutlet, IonMenu, IonHeader, IonToolbar, IonTitle, IonC
 import { useRouter } from "vue-router";
 import { auth } from "@/firebase"; // Import Firebase auth
 import { signOut } from "firebase/auth";
+import Cookies from "js-cookie"; // Import js-cookie
+import { userStore } from "@/store/user.js";
+
+
+
+const store = userStore(); // Get Pinia store instance
 const router = useRouter();
 
 const logout = async () => {
   try {
     await signOut(auth);
+    Cookies.remove("uid");
+    store.logout();
     router.push("/"); // Redirect to login page after logout
   } catch (error) {
     console.error("Logout failed", error);

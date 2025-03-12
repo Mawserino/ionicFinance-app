@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from '@ionic/vue-router';
 import HomePage from '../views/HomePage.vue';
 import AuthView from "../views/AuthView.vue";
 import Setting from '../views/Setting.vue';
+import Calendar from '../views/Calendar.vue';
 
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from "@/firebase";
@@ -28,6 +29,11 @@ const routes = [
     path: '/auth',
     name: 'Auth',
     component: AuthView
+  },
+  {
+    path: '/calendar',
+    name: 'Calendar',
+    component: Calendar
   }
   
 ];

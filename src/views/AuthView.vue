@@ -53,6 +53,7 @@
             <ion-icon name="logo-google" slot="start"></ion-icon>
             Sign in with Google
           </ion-button>
+
         </ion-card-content>
       </ion-card>
     </ion-content>
@@ -62,12 +63,14 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import Cookies from "js-cookie"; // Import js-cookie
 import { auth } from "@/firebase"; // Import Firebase auth
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   GoogleAuthProvider, 
-  signInWithPopup 
+  signInWithPopup, 
+  signOut 
 } from "firebase/auth";
 
 const router = useRouter();
@@ -82,27 +85,45 @@ const errorMessage = ref("");
 // Login function
 const login = async () => {
   errorMessage.value = "";
-  
+
   if (!userCredentials.value.email || !userCredentials.value.password) {
     errorMessage.value = "Please fill in both fields.";
     return;
   }
 
   try {
-    await signInWithEmailAndPassword(auth, userCredentials.value.email, userCredentials.value.password);
-    router.push("/home"); // Redirect to home page after successful login
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      userCredentials.value.email,
+      userCredentials.value.password
+    );
+
+    const user = userCredential.user;
+
+    // Store UID in cookies
+    Cookies.set("uid", user.uid, { expires: 7 }); // Expires in 7 days
+    router.push("/home"); // Redirect to home page
   } catch (error) {
     errorMessage.value = "Invalid email or password.";
   }
 };
-//test
+
 // Signup function
 const signUp = async () => {
   errorMessage.value = "";
 
   try {
-    await createUserWithEmailAndPassword(auth, userCredentials.value.email, userCredentials.value.password);
-    router.push("/home"); // Redirect after successful signup
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      userCredentials.value.email,
+      userCredentials.value.password
+    );
+
+    const user = userCredential.user;
+
+    // Store UID in cookies
+    Cookies.set("uid", user.uid, { expires: 7 });
+    router.push("/home");
   } catch (error) {
     errorMessage.value = "Error creating account. Try again.";
   }
@@ -114,12 +135,27 @@ const signInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
 
   try {
-    await signInWithPopup(auth, provider);
-    router.push("/home"); // Redirect after successful Google login
+    const userCredential = await signInWithPopup(auth, provider);
+    const user = userCredential.user;
+
+    // Store UID in cookies
+    Cookies.set("uid", user.uid, { expires: 7 });
+    router.push("/home");
   } catch (error) {
     errorMessage.value = "Google sign-in failed. Try again.";
   }
 };
+
+// Logout function (Clears cookies)
+// const logout = async () => {
+//   try {
+//     await signOut(auth); // Firebase sign-out
+//     Cookies.remove("uid"); // Remove UID from cookies
+//     router.push("/login"); // Redirect to login page
+//   } catch (error) {
+//     errorMessage.value = "Logout failed. Try again.";
+//   }
+// };
 </script>
 
 <style scoped>
