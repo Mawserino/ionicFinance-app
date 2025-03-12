@@ -1,5 +1,15 @@
 <template>
   <ion-page>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-toggle>
+            <ion-button>Menu</ion-button>
+          </ion-menu-toggle>
+        </ion-buttons>
+        <ion-title>Home</ion-title>
+      </ion-toolbar>
+    </ion-header>
     <ion-content :fullscreen="true">
       <ion-card>
         <ion-card-header>
@@ -8,7 +18,8 @@
               <ion-card-title>Balance:</ion-card-title>
             </ion-col>
             <ion-col class="ion-text-end">
-              <ion-card-title>{{ totalBalance }} PHP</ion-card-title>
+              <!-- <ion-card-title>{{ totalBalance }}</ion-card-title> -->
+               <h2>{{ totalBalance }} PHP</h2>
             </ion-col>
           </ion-row>
         </ion-card-header>
@@ -28,18 +39,18 @@
       </ion-row>
 
       <ion-card>
-        <ion-row v-for="(record, index) in recordsList" :key="index">
-          <ion-col>
-            <ion-card-title>{{ record.comment }}</ion-card-title>
-            <ion-card-subtitle>{{ record.date }}</ion-card-subtitle>
-          </ion-col>
-          <ion-col class="ion-text-end">
-            <ion-card-title :class="{ 'added-funds': !record.isExpense }">
+        <div class="data-records" v-for="(record, index) in store.records" :key="index">
+          <ion-item lines="full">
+            <ion-label>
+              <h2>{{ record.comment }}</h2>
+              <p>{{ record.date }}</p>
+            </ion-label>
+            <ion-note slot="end" :class="{ 'added-funds': !record.isExpense }">
               <span v-if="!record.isExpense">+</span>
               {{ record.value }} PHP
-            </ion-card-title>
-          </ion-col>
-        </ion-row>
+            </ion-note>
+          </ion-item>
+        </div>
       </ion-card>
 
       <ion-modal
@@ -80,8 +91,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import {userStore} from "@/store/user.js";
+import { computed, ref, onMounted } from "vue";
+import { personOutline } from "ionicons/icons";
+import { userStore } from "@/store/user.js";
+import { useRouter } from "vue-router";
+
 
 const store = userStore()
 
@@ -92,7 +106,7 @@ const isNewRecordWithExpenses = ref(false);
 const isAddFundsModalOpen = ref(false);
 
 const totalBalance = computed(() => {
-  return recordsList.value.reduce((sum, el) => {
+  return store.records.reduce((sum, el) => {
     if (el.isExpense) {
       return sum - Number(el.value)
     } else {
@@ -131,10 +145,22 @@ const addFunds = () => {
 const dismiss = () => {
   isAddFundsModalOpen.value = false;
 };
+
+onMounted(() => {
+  store.fetchDataFromDB()
+})
 </script>
 
 <style scoped>
 .added-funds {
   color: var(--ion-color-success);
 }
+.data-records {
+  
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--ion-background-color);
+  margin: 5px 0;
+}
+
 </style>
