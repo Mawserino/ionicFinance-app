@@ -133,6 +133,17 @@ const OpenFundsModal = (isExpenses) => {
   console.log("User UID:", uid);
 };
 
+const fetchUserData = () => {
+  const uid = Cookies.get("uid");
+  if (uid) {
+    console.log("Fetching data for UID:", uid);
+    store.fetchDataFromDB();
+  } else {
+    console.log("No user logged in");
+    store.clearData(); // Clear records when no user is logged in
+  }
+};
+
 const addFunds = () => {
   if (!record.value.comment || !record.value.value) return;
 
@@ -152,9 +163,8 @@ const dismiss = () => {
   isAddFundsModalOpen.value = false;
 };
 
-onMounted(() => {
-  store.fetchDataFromDB()
-})
+onMounted(fetchUserData);
+
 </script>
 
 <style scoped>

@@ -3,6 +3,7 @@ import HomePage from '../views/HomePage.vue';
 import AuthView from "../views/AuthView.vue";
 import Setting from '../views/Setting.vue';
 import Calendar from '../views/Calendar.vue';
+import Register from '../views/Register.vue';
 
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from "@/firebase";
@@ -34,6 +35,11 @@ const routes = [
     path: '/calendar',
     name: 'Calendar',
     component: Calendar
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register
   }
   
 ];

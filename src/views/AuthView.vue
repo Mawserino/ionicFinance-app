@@ -44,7 +44,7 @@
           </ion-button>
 
           <!-- Signup Button -->
-          <ion-button expand="block" fill="outline" class="ion-margin-top" @click="signUp">
+          <ion-button expand="block" fill="outline" class="ion-margin-top" router-link="/register">
             Sign Up
           </ion-button>
 
@@ -72,6 +72,12 @@ import {
   signInWithPopup, 
   signOut 
 } from "firebase/auth";
+import { addIcons } from 'ionicons';
+import { logoGoogle } from 'ionicons/icons'; 
+
+addIcons({
+  'logo-google': logoGoogle
+});
 
 const router = useRouter();
 

@@ -27,6 +27,14 @@
           <ion-menu-toggle auto-hide="true">
             <ion-item button @click="logout">Logout</ion-item>  
           </ion-menu-toggle>
+
+          <ion-menu-toggle auto-hide="true">
+            <ion-item>
+              <ion-label>Night Mode</ion-label>
+              <ion-toggle :checked="isDarkMode" @ionChange="toggleDarkMode"></ion-toggle>
+            </ion-item>
+          </ion-menu-toggle>
+
         </ion-list>
       </ion-content>
     </ion-menu>
@@ -43,17 +51,31 @@ import { auth } from "@/firebase"; // Import Firebase auth
 import { signOut } from "firebase/auth";
 import Cookies from "js-cookie"; // Import js-cookie
 import { userStore } from "@/store/user.js";
+import { ref, watchEffect } from "vue";
 
 
 
 const store = userStore(); // Get Pinia store instance
 const router = useRouter();
+const isDarkMode = ref(localStorage.getItem("darkMode") === "true");
+
+const toggleDarkMode = () => {
+    isDarkMode.value = !isDarkMode.value;
+    document.body.classList.toggle("dark-theme", isDarkMode.value);
+    localStorage.setItem("darkMode", isDarkMode.value);
+};
+
+// Ensure correct theme on page load
+watchEffect(() => {
+    document.body.classList.toggle("dark-theme", isDarkMode.value);
+});
 
 const logout = async () => {
   try {
     await signOut(auth);
     Cookies.remove("uid");
     store.logout();
+    window.location.reload();
     router.push("/"); // Redirect to login page after logout
   } catch (error) {
     console.error("Logout failed", error);
