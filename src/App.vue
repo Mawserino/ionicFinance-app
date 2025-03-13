@@ -12,10 +12,10 @@
       </ion-header>
       <ion-content>
         <ion-list>
-          <ion-menu-toggle auto-hide="true">
+          <ion-menu-toggle auto-hide="true">  <!-- Ensures menu closes when clicking an item -->
             <ion-item router-link="/home">Home</ion-item>
           </ion-menu-toggle>
-
+          
           <ion-menu-toggle auto-hide="true">
             <ion-item router-link="/setting">Setting</ion-item>
           </ion-menu-toggle>
@@ -23,9 +23,9 @@
           <ion-menu-toggle auto-hide="true">
             <ion-item router-link="/calendar">Calendar</ion-item>
           </ion-menu-toggle>
-
+          
           <ion-menu-toggle auto-hide="true">
-            <ion-item button @click="logout">Logout</ion-item>
+            <ion-item button @click="logout">Logout</ion-item>  
           </ion-menu-toggle>
 
           <ion-menu-toggle auto-hide="true">
@@ -34,6 +34,7 @@
               <ion-toggle :checked="isDarkMode" @ionChange="toggleDarkMode"></ion-toggle>
             </ion-item>
           </ion-menu-toggle>
+
         </ion-list>
       </ion-content>
     </ion-menu>
@@ -50,53 +51,32 @@ import { auth } from "@/firebase"; // Import Firebase auth
 import { signOut } from "firebase/auth";
 import Cookies from "js-cookie"; // Import js-cookie
 import { userStore } from "@/store/user.js";
-import { ref, watchEffect, onMounted } from "vue";
+import { ref, watchEffect } from "vue";
 
-const store = userStore(); // ✅ Pinia store instance
+
+
+const store = userStore(); // Get Pinia store instance
 const router = useRouter();
 const isDarkMode = ref(localStorage.getItem("darkMode") === "true");
 
-// ✅ Function to fetch user data (Runs only if records are empty)
-const fetchUserData = async () => {
-  const uid = Cookies.get("uid");
-  if (uid) {
-    console.log("Fetching user data for UID:", uid);
-    await store.fetchDataFromDB();
-
-    // ✅ Force Vue to detect changes by replacing the array
-    store.records = [...store.records];  
-    console.log("User data loaded:", store.records);
-      
-  } else {
-    console.log("No user logged in");
-    store.clearData();
-  }
-};
-
-// ✅ Ensure data is loaded **only if necessary**
-onMounted(() => {
-  if (store.records.length === 0) {
-    fetchUserData();
-  }
-});
 const toggleDarkMode = () => {
-  isDarkMode.value = !isDarkMode.value;
-  document.body.classList.toggle("dark-theme", isDarkMode.value);
-  localStorage.setItem("darkMode", isDarkMode.value);
+    isDarkMode.value = !isDarkMode.value;
+    document.body.classList.toggle("dark-theme", isDarkMode.value);
+    localStorage.setItem("darkMode", isDarkMode.value);
 };
 
-// ✅ Ensure correct theme on page load
+// Ensure correct theme on page load
 watchEffect(() => {
-  document.body.classList.toggle("dark-theme", isDarkMode.value);
+    document.body.classList.toggle("dark-theme", isDarkMode.value);
 });
 
 const logout = async () => {
   try {
     await signOut(auth);
     Cookies.remove("uid");
-    store.logout(); // ✅ Clears records in Pinia
-    localStorage.removeItem("records"); // ✅ Clears stored data
-    router.push("/"); // ✅ Redirects to login
+    store.logout();
+    window.location.reload();
+    router.push("/"); // Redirect to login page after logout
   } catch (error) {
     console.error("Logout failed", error);
   }

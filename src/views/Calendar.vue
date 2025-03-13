@@ -18,8 +18,8 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
 import { userStore } from "@/store/user.js";
+import { ref, onMounted, watch } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import Cookies from "js-cookie";
@@ -33,6 +33,7 @@ const calendarOptions = ref({
   plugins: [dayGridPlugin],
   initialView: "dayGridMonth",
   events: [], // Start with an empty list
+  height: "auto",
 });
 
 // ✅ Function to update FullCalendar with stored records
@@ -67,5 +68,12 @@ watch(
 );
 
 // 🚀 Fetch user data when component mounts
-onMounted(fetchUserData);
+onMounted(() => {
+  fetchUserData();
+
+  // 🛠 Force re-render after delay to fix initial rendering issue
+  setTimeout(() => {
+    calendarOptions.value = { ...calendarOptions.value };
+  }, 200);
+});
 </script>

@@ -140,13 +140,11 @@
   
   // ✅ Fetch data if records are empty (only needed for direct page loads)
   onMounted(() => {
-  if (store.records.length === 0) {
-    console.log("Fetching records on HomePage mount...");
-    store.fetchDataFromDB().then(() => {
-      store.records = [...store.records]; // ✅ Force reactivity update
-    });
-  }
-});
+    if (store.records.length === 0) {
+      console.log("Fetching records on HomePage mount...");
+      store.fetchDataFromDB();
+    }
+  });
   </script>
   
   <style scoped>

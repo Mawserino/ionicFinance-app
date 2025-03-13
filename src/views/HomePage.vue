@@ -10,35 +10,34 @@
         <ion-title>Home</ion-title>
       </ion-toolbar>
     </ion-header>
+
     <ion-content :fullscreen="true">
-      <ion-card>
+      <!-- 🔄 Loading Spinner -->
+      <ion-loading :is-open="isLoading" message="Loading data..." spinner="crescent"></ion-loading>
+
+      <ion-card v-if="!isLoading">
         <ion-card-header>
           <ion-row class="ion-align-items-center">
             <ion-col>
               <ion-card-title>Balance:</ion-card-title>
             </ion-col>
             <ion-col class="ion-text-end">
-              <!-- <ion-card-title>{{ totalBalance }}</ion-card-title> -->
-               <h2>{{ totalBalance }} PHP</h2>
+              <h2>{{ totalBalance }} PHP</h2>
             </ion-col>
           </ion-row>
         </ion-card-header>
       </ion-card>
 
-      <ion-row>
+      <ion-row v-if="!isLoading">
         <ion-col>
-          <ion-button expand="block" @click="OpenFundsModal(false)">
-            Add Funds
-          </ion-button>
+          <ion-button expand="block" @click="OpenFundsModal(false)">Add Funds</ion-button>
         </ion-col>
         <ion-col>
-          <ion-button color="danger" expand="block" @click="OpenFundsModal(true)">
-            Reduce Funds
-          </ion-button>
+          <ion-button color="danger" expand="block" @click="OpenFundsModal(true)">Reduce Funds</ion-button>
         </ion-col>
       </ion-row>
 
-      <ion-card>
+      <ion-card v-if="!isLoading">
         <div class="data-records" v-for="(record, index) in store.records" :key="index">
           <ion-item lines="full">
             <ion-label>
@@ -90,93 +89,17 @@
   </ion-page>
 </template>
 
-<!-- <script setup>
-import { computed, ref, onMounted } from "vue";
-import { personOutline } from "ionicons/icons";
-import { userStore } from "@/store/user.js";
-import { useRouter } from "vue-router";
-import Cookies from "js-cookie"; // Import js-cookie
-
-const uid = Cookies.get("uid"); // Retrieve UID from cookies
-
-console.log("User UID:", uid);
-
-
-const store = userStore()
-
-const recordsList = ref([
-]);
-
-const isNewRecordWithExpenses = ref(false);
-const isAddFundsModalOpen = ref(false);
-
-const totalBalance = computed(() => {
-  return store.records.reduce((sum, el) => {
-    if (el.isExpense) {
-      return sum - Number(el.value)
-    } else {
-      return sum + Number(el.value)
-    }
-  }, 0)
-})
-
-
-const record = ref({
-  comment: "",
-  value: null,
-});
-
-const OpenFundsModal = (isExpenses) => {
-  isNewRecordWithExpenses.value = isExpenses;
-  record.value = { comment: "", value: null }; // Reset form inputs
-  isAddFundsModalOpen.value = true;
-  console.log("User UID:", uid);
-};
-
-const fetchUserData = () => {
-  const uid = Cookies.get("uid");
-  if (uid) {
-    console.log("Fetching data for UID:", uid);
-    store.fetchDataFromDB();
-  } else {
-    console.log("No user logged in");
-    store.clearData(); // Clear records when no user is logged in
-  }
-};
-
-const addFunds = () => {
-  if (!record.value.comment || !record.value.value) return;
-
-  const data = {
-    ...record.value, date: new Date().toISOString()}
-    data.isExpense = isNewRecordWithExpenses.value
-
-  recordsList.value.push(data)
-
-  store.addRecordToStore(data)
-  
-  record.value = {}
-  dismiss();
-};
-
-const dismiss = () => {
-  isAddFundsModalOpen.value = false;
-};
-
-onMounted(fetchUserData);
-
-</script> -->
-
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
+import { onIonViewWillEnter } from '@ionic/vue';
 import { userStore } from "@/store/user.js";
-import Cookies from "js-cookie"; 
+import Cookies from "js-cookie";
 
-const store = userStore(); // ✅ Uses store data directly
-
-const recordsList = ref([]);
-const isNewRecordWithExpenses = ref(false);
+const store = userStore();
+const isLoading = ref(true); // 🔄 Loading state
 const isAddFundsModalOpen = ref(false);
+const isNewRecordWithExpenses = ref(false);
+const record = ref({ comment: "", value: null });
 
 const totalBalance = computed(() => {
   return store.records.reduce((sum, el) => {
@@ -184,11 +107,6 @@ const totalBalance = computed(() => {
   }, 0);
 });
 
-const record = ref({
-  comment: "",
-  value: null,
-});
-
 const OpenFundsModal = (isExpenses) => {
   isNewRecordWithExpenses.value = isExpenses;
   record.value = { comment: "", value: null }; // Reset form inputs
@@ -198,11 +116,13 @@ const OpenFundsModal = (isExpenses) => {
 const addFunds = () => {
   if (!record.value.comment || !record.value.value) return;
 
-  const data = { ...record.value, date: new Date().toISOString(), isExpense: isNewRecordWithExpenses.value };
-  
-  recordsList.value.push(data);
-  store.addRecordToStore(data);
-  
+  const data = { 
+    ...record.value, 
+    date: new Date().toISOString(), 
+    isExpense: isNewRecordWithExpenses.value 
+  };
+
+  store.addRecordToStore(data); // ✅ Updates Pinia store
   record.value = {};
   dismiss();
 };
@@ -210,19 +130,32 @@ const addFunds = () => {
 const dismiss = () => {
   isAddFundsModalOpen.value = false;
 };
-</script>
 
+// ✅ Fetch data when page is entered
+onIonViewWillEnter(async () => {
+  console.log("🔄 Reloading HomePage data...");
+  isLoading.value = true; // Start loading
+  await store.fetchDataFromDB();
+  store.records = [...store.records]; // ✅ Force UI refresh
+  isLoading.value = false; // Stop loading
+});
+
+// ✅ Also fetch on initial mount (for direct loads)
+onMounted(async () => {
+  isLoading.value = true;
+  await store.fetchDataFromDB();
+  isLoading.value = false;
+});
+</script>
 
 <style scoped>
 .added-funds {
   color: var(--ion-color-success);
 }
 .data-records {
-  
   padding: 10px;
   border-radius: 8px;
   background: var(--ion-background-color);
   margin: 5px 0;
 }
-
 </style>
