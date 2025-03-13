@@ -90,7 +90,7 @@
   </ion-page>
 </template>
 
-<script setup>
+<!-- <script setup>
 import { computed, ref, onMounted } from "vue";
 import { personOutline } from "ionicons/icons";
 import { userStore } from "@/store/user.js";
@@ -148,7 +148,7 @@ const addFunds = () => {
   if (!record.value.comment || !record.value.value) return;
 
   const data = {
-    ...record.value, date:new Date().toDateString()}
+    ...record.value, date: new Date().toISOString()}
     data.isExpense = isNewRecordWithExpenses.value
 
   recordsList.value.push(data)
@@ -165,7 +165,53 @@ const dismiss = () => {
 
 onMounted(fetchUserData);
 
+</script> -->
+
+<script setup>
+import { computed, ref } from "vue";
+import { userStore } from "@/store/user.js";
+import Cookies from "js-cookie"; 
+
+const store = userStore(); // ✅ Uses store data directly
+
+const recordsList = ref([]);
+const isNewRecordWithExpenses = ref(false);
+const isAddFundsModalOpen = ref(false);
+
+const totalBalance = computed(() => {
+  return store.records.reduce((sum, el) => {
+    return el.isExpense ? sum - Number(el.value) : sum + Number(el.value);
+  }, 0);
+});
+
+const record = ref({
+  comment: "",
+  value: null,
+});
+
+const OpenFundsModal = (isExpenses) => {
+  isNewRecordWithExpenses.value = isExpenses;
+  record.value = { comment: "", value: null }; // Reset form inputs
+  isAddFundsModalOpen.value = true;
+};
+
+const addFunds = () => {
+  if (!record.value.comment || !record.value.value) return;
+
+  const data = { ...record.value, date: new Date().toISOString(), isExpense: isNewRecordWithExpenses.value };
+  
+  recordsList.value.push(data);
+  store.addRecordToStore(data);
+  
+  record.value = {};
+  dismiss();
+};
+
+const dismiss = () => {
+  isAddFundsModalOpen.value = false;
+};
 </script>
+
 
 <style scoped>
 .added-funds {
