@@ -38,19 +38,20 @@
       </ion-row>
 
       <ion-card v-if="!isLoading">
-        <div class="data-records" v-for="(record, index) in store.records" :key="index">
-          <ion-item lines="full">
-            <ion-label>
-              <h2>{{ record.comment }}</h2>
-              <p>{{ record.date }}</p>
-            </ion-label>
-            <ion-note slot="end" :class="{ 'added-funds': !record.isExpense }">
-              <span v-if="!record.isExpense">+</span>
-              {{ record.value }} PHP
-            </ion-note>
-          </ion-item>
-        </div>
-      </ion-card>
+  <div class="data-records" v-for="(record, index) in store.records" :key="index">
+    <ion-item lines="full">
+      <ion-label>
+        <h2>{{ record.comment }}</h2>
+        <!-- ✅ Format date before displaying -->
+        <p>{{ formatDate(record.date) }}</p>
+      </ion-label>
+      <ion-note slot="end" :class="{ 'added-funds': !record.isExpense }">
+        <span v-if="!record.isExpense">+</span>
+        {{ record.value }} PHP
+      </ion-note>
+    </ion-item>
+  </div>
+</ion-card>
 
       <ion-modal
         :is-open="isAddFundsModalOpen"
@@ -129,6 +130,15 @@ const addFunds = () => {
 
 const dismiss = () => {
   isAddFundsModalOpen.value = false;
+};
+
+const formatDate = (isoString) => {
+  const date = new Date(isoString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  });
 };
 
 // ✅ Fetch data when page is entered
