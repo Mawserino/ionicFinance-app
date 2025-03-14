@@ -43,12 +43,12 @@
     <ion-item lines="full">
       <ion-label>
         <h2>{{ record.comment }}</h2>
-        <!-- ✅ Format date before displaying -->
+        <p>{{ record.category }}</p>         
         <p>{{ formatDate(record.date) }}</p>
       </ion-label>
       <ion-note slot="end" :class="{ 'added-funds': !record.isExpense }">
-        <span v-if="!record.isExpense">+</span>
-        {{ record.value }} PHP
+        
+        <h3><span v-if="!record.isExpense">+</span>{{ record.value }} PHP</h3>
       </ion-note>
     </ion-item>
   </div>

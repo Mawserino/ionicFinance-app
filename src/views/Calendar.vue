@@ -27,6 +27,7 @@
             <ion-item v-for="(event, index) in selectedEvents" :key="index">
               <ion-label>
                 <h2>{{ event.title }}</h2>
+                <p>Category: {{ event.category.value }}</p>
                 <p>Amount: {{ event.expense.value ? '-' : '+' }} {{ event.extendedProps?.value || 'N/A' }} PHP </p>
 
               </ion-label>
@@ -75,6 +76,7 @@ const openModal = (info) => {
       title: record.comment || "No Comment",
       extendedProps: { value: record.value ?? "N/A" },
       expense: {value: record.isExpense ?? "N/A"},
+      category: {value: record.category ?? "N/A"},
     }));
 
   showModal.value = true;
