@@ -2,7 +2,8 @@
   --ion-background-color: #ffffff;
   --ion-text-color: #000000;
   --ion-card-background: #f4f4f4;
-  --ion-header-color: #1e1e1e;
+  --ion-card-title: #f4f4f4;
+  --ion-header-color: #ffffff;
   --ion-toolbar-color: #1e1e1e;
 
 }
@@ -12,7 +13,7 @@
   --ion-text-color: #ffffff;
   --ion-card-background: #1e1e1e;
   --ion-header-color: #f4f4f4;
-  --ion-toolbar-color: #1e1e1e;
+  --ion-toolbar-color: #ffffff;
 }
 
 body {
