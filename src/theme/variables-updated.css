@@ -1,0 +1,19 @@
+/* Default colors */
+:root {
+  --primary-color: #3880ff; /* Light mode primary color */
+  --secondary-color: #3dc2ff; /* Light mode secondary color */
+  --background-color: #ffffff; /* Light mode background color */
+  --text-color: #000000; /* Light mode text color */
+}
+
+/* Dark mode colors */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #1e1e1e; /* Dark mode primary color */
+    --secondary-color: #3dc2ff; /* Dark mode secondary color */
+    --background-color: #121212; /* Dark mode background color */
+    --text-color: #ffffff; /* Dark mode text color */
+    --header-background-color: #1e1e1e; /* Dark mode header background color */
+    --header-text-color: #ffffff; /* Dark mode header text color */
+  }
+}

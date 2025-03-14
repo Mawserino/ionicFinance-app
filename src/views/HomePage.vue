@@ -19,7 +19,8 @@
         <ion-card-header>
           <ion-row class="ion-align-items-center">
             <ion-col>
-              <ion-card-title>Balance:</ion-card-title>
+              <h1>Balance:</h1>
+              <!-- <ion-card-title>Balance:</ion-card-title> -->
             </ion-col>
             <ion-col class="ion-text-end">
               <h2>{{ totalBalance }} PHP</h2>
