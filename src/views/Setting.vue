@@ -1,35 +1,93 @@
 <template>
-    <ion-page>
+  <ion-page>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-toggle>
+            <ion-button>Menu</ion-button>
+          </ion-menu-toggle>
+        </ion-buttons>
+        <ion-title>Settings</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content :fullscreen="true">
+      <ion-card>
+        <ion-row>
+          <ion-col>
+            <ion-button expand="block" @click="OpenCategoriesModal()">Add Categories</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-card>
+
+      <ion-modal
+      :is-open="isAddCategoriesModalOpen"
+      @will-dismiss="dismiss"
+      :initial-breakpoint="0.5"
+      :breakpoints="[0, 0.5, 1]"
+      handle-behavior="cycle"
+    >
       <ion-header>
         <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-menu-toggle>
-              <ion-button>Menu</ion-button>
-            </ion-menu-toggle>
-          </ion-buttons>
-          <ion-title>Settings</ion-title>
+          <ion-button @click="dismiss">Close</ion-button>
         </ion-toolbar>
       </ion-header>
-  
-      <ion-content :fullscreen="true">
-        <ion-card>
-          <h1>hello</h1>
-        </ion-card>
+      <ion-content class="ion-padding">
+        <ion-input
+        v-model="category.input"
+        label="Category"
+        label-placement="floating"
+        placeholder="Enter category"
+      ></ion-input>
+
+
+        <ion-button class="ion-margin-top" expand="block" @click="addCategories">
+          Submit
+        </ion-button>
       </ion-content>
-    </ion-page>
-  </template>
-  
-  <script setup>
-  import { 
-    IonPage, 
-    IonHeader, 
-    IonToolbar, 
-    IonTitle, 
-    IonContent, 
-    IonCard, 
-    IonButtons, 
-    IonMenuToggle, 
-    IonButton 
-  } from '@ionic/vue';
-  </script>
-  
+    </ion-modal>
+    </ion-content>
+  </ion-page>
+</template>
+
+<script setup>
+import { 
+  IonPage, 
+  IonHeader, 
+  IonToolbar, 
+  IonTitle, 
+  IonContent, 
+  IonCard, 
+  IonButtons, 
+  IonMenuToggle, 
+  IonButton 
+} from '@ionic/vue';
+import { computed, ref, onMounted } from "vue";
+import { onIonViewWillEnter } from '@ionic/vue';
+import { userStore } from "@/store/user.js";
+
+const store = userStore();
+const isAddCategoriesModalOpen = ref(false);
+const category = ref({ input: ""});
+
+const OpenCategoriesModal = () => {
+category.value = {input: ""};
+isAddCategoriesModalOpen.value = true;
+};
+
+const dismiss = () => {
+  isAddCategoriesModalOpen.value = false;
+};
+
+const addCategories = () => {
+  if (!category.value.input) return;
+
+  const data = { 
+    ...category.value
+  };
+
+  store.addCategoriesToStore(data); // ✅ Updates Pinia store
+  category.value = {};
+  dismiss();
+};
+</script>

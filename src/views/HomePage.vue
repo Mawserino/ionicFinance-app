@@ -20,7 +20,6 @@
           <ion-row class="ion-align-items-center">
             <ion-col>
               <h1>Balance:</h1>
-              <!-- <ion-card-title>Balance:</ion-card-title> -->
             </ion-col>
             <ion-col class="ion-text-end">
               <h2>{{ totalBalance }} PHP</h2>
@@ -98,6 +97,7 @@ import { userStore } from "@/store/user.js";
 import Cookies from "js-cookie";
 
 const store = userStore();
+const categoryStore = userStore();
 const isLoading = ref(true); // 🔄 Loading state
 const isAddFundsModalOpen = ref(false);
 const isNewRecordWithExpenses = ref(false);
@@ -147,6 +147,7 @@ onIonViewWillEnter(async () => {
   console.log("🔄 Reloading HomePage data...");
   isLoading.value = true; // Start loading
   await store.fetchDataFromDB();
+  await categoryStore.fetchCategoriesFromDB();
   store.records = [...store.records]; // ✅ Force UI refresh
   isLoading.value = false; // Stop loading
 });
@@ -155,6 +156,7 @@ onIonViewWillEnter(async () => {
 onMounted(async () => {
   isLoading.value = true;
   await store.fetchDataFromDB();
+  await categoryStore.fetchCategoriesFromDB();
   isLoading.value = false;
 });
 </script>

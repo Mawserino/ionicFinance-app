@@ -8,7 +8,8 @@ const uid = Cookies.get("uid"); // Retrieve UID from cookies
 
 export const userStore = defineStore('user', {
     state: () => ({
-        records: []
+        records: [],
+        categorys: []
     }),
 
     actions: {
@@ -24,6 +25,23 @@ export const userStore = defineStore('user', {
             if (docSnap.exists()) {
                 console.log("Document data:", docSnap.data());
                 this.records = [...docSnap.data().records];
+            } else {
+                console.log("No such document!");
+            }
+        },
+
+        async fetchCategoriesFromDB() {
+            if (!auth.currentUser) {
+                console.error("No authenticated user");
+                return;
+            }
+            
+            const docRef = doc(dataBase, "users", auth.currentUser.uid);
+            const docSnap = await getDoc(docRef);
+    
+            if (docSnap.exists()) {
+                console.log("Document data:", docSnap.data());
+                this.categorys = [...docSnap.data().categorys];
             } else {
                 console.log("No such document!");
             }
@@ -54,6 +72,36 @@ export const userStore = defineStore('user', {
                 }
         
                 this.records.push(record);
+            } catch (error) {
+                console.error("Error updating Firestore:", error);
+            }
+        },
+
+        async addCategoriesToStore(category) {
+            if (!auth.currentUser) {
+                console.error("No authenticated user");
+                return;
+            }
+        
+            const userId = auth.currentUser.uid;
+            const recordReference = doc(dataBase, "users", userId);
+        
+            try {
+                const docSnap = await getDoc(recordReference);
+        
+                if (docSnap.exists()) {
+                    // If the document exists, update it
+                    await updateDoc(recordReference, {
+                        categorys: arrayUnion(category)
+                    });
+                } else {
+                    // If the document does not exist, create it first
+                    await setDoc(recordReference, {
+                        categorys: [category] // Create the "records" array with the new record
+                    });
+                }
+        
+                this.categorys.push(category);
             } catch (error) {
                 console.error("Error updating Firestore:", error);
             }

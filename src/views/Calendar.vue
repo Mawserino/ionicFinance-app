@@ -27,7 +27,8 @@
             <ion-item v-for="(event, index) in selectedEvents" :key="index">
               <ion-label>
                 <h2>{{ event.title }}</h2>
-                <p>Amount: {{ event.extendedProps?.value || 'N/A' }} PHP</p>
+                <p>Amount: {{ event.expense.value ? '-' : '+' }} {{ event.extendedProps?.value || 'N/A' }} PHP </p>
+
               </ion-label>
             </ion-item>
           </ion-list>
@@ -73,6 +74,7 @@ const openModal = (info) => {
     .map((record) => ({
       title: record.comment || "No Comment",
       extendedProps: { value: record.value ?? "N/A" },
+      expense: {value: record.isExpense ?? "N/A"},
     }));
 
   showModal.value = true;
@@ -98,7 +100,9 @@ const updateCalendarEvents = () => {
     title: record.comment || "No Comment",
     start: formatDate(record.date),
     extendedProps: { value: record.value ?? "N/A" },
+    expense: {Boolean: record.isExpense ?? "N/A"},
   }));
+  
 };
 
 // ✅ Function to fetch user data and update calendar
