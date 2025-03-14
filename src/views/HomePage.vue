@@ -8,6 +8,7 @@
           </ion-menu-toggle>
         </ion-buttons>
         <ion-title>Home</ion-title>
+        
       </ion-toolbar>
     </ion-header>
 
@@ -81,6 +82,15 @@
             placeholder="Enter amount"
           ></ion-input>
 
+          <ion-select v-model="categoryVar" label="Category" @ionChange="handleCategoryChange">
+            <ion-select-option 
+              v-for="(cat, index) in categoryStore.categorys" 
+              :key="index" 
+              :value="cat.input">
+              {{ cat.input }}
+            </ion-select-option>
+          </ion-select>
+
           <ion-button class="ion-margin-top" expand="block" @click="addFunds">
             Submit
           </ion-button>
@@ -91,17 +101,26 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, watch } from "vue";
 import { onIonViewWillEnter } from '@ionic/vue';
 import { userStore } from "@/store/user.js";
 import Cookies from "js-cookie";
+
 
 const store = userStore();
 const categoryStore = userStore();
 const isLoading = ref(true); // 🔄 Loading state
 const isAddFundsModalOpen = ref(false);
 const isNewRecordWithExpenses = ref(false);
+const categoryVar = ref(""); // Reactive variable
+const categories = computed(() => store.categorys); // Ensures reactivity
+const selectedCategory = ref("");
 const record = ref({ comment: "", value: null });
+
+const handleCategoryChange = (event) => {
+  categoryVar.value = event.detail.value; // ✅ Assign selected value
+};
+
 
 const totalBalance = computed(() => {
   return store.records.reduce((sum, el) => {
@@ -115,13 +134,16 @@ const OpenFundsModal = (isExpenses) => {
   isAddFundsModalOpen.value = true;
 };
 
+
+
 const addFunds = () => {
-  if (!record.value.comment || !record.value.value) return;
+  if (!record.value.comment || !record.value.value || !categoryVar.value) return;
 
   const data = { 
     ...record.value, 
     date: new Date().toISOString(), 
-    isExpense: isNewRecordWithExpenses.value 
+    isExpense: isNewRecordWithExpenses.value,
+    category: categoryVar.value
   };
 
   store.addRecordToStore(data); // ✅ Updates Pinia store
@@ -148,7 +170,9 @@ onIonViewWillEnter(async () => {
   isLoading.value = true; // Start loading
   await store.fetchDataFromDB();
   await categoryStore.fetchCategoriesFromDB();
+  categoryStore.categorys = [...categoryStore.categorys];
   store.records = [...store.records]; // ✅ Force UI refresh
+  console.log("Fetched categories:", categoryStore.categorys);
   isLoading.value = false; // Stop loading
 });
 
@@ -171,4 +195,6 @@ onMounted(async () => {
   background: var(--ion-background-color);
   margin: 5px 0;
 }
+
+
 </style>

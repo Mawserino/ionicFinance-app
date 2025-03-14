@@ -15,6 +15,19 @@
   --ion-header-color: #f4f4f4;
   --ion-toolbar-color: #ffffff;
   --ion-toolbar-background: #303030;
+  --alert-button-inner: #303030;
+
+
+  --ion-color-step-50: #ffffff;
+  --ion-color-step-100: #cccccc;
+  
+  .alert-wrapper {
+    background-color: #1e1e1e !important;
+  }
+
+  .alert-radio-label {
+    color: #ffffff !important;
+  }
 }
 
 body {
@@ -25,3 +38,4 @@ body {
   ion-input {
     border-bottom: solid 1px #737373;
   }
+
