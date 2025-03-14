@@ -18,6 +18,14 @@
             <ion-button expand="block" @click="OpenCategoriesModal()">Add Categories</ion-button>
           </ion-col>
         </ion-row>
+        <ion-row>
+          <ion-col>
+            <h4>Night Mode</h4>
+          </ion-col>
+          <ion-col>
+            <ion-toggle :checked="isDarkMode" @ionChange="toggleDarkMode"></ion-toggle>
+          </ion-col>
+        </ion-row>
       </ion-card>
 
       <ion-modal
@@ -66,9 +74,12 @@ import { computed, ref, onMounted } from "vue";
 import { onIonViewWillEnter } from '@ionic/vue';
 import { userStore } from "@/store/user.js";
 
+
 const store = userStore();
 const isAddCategoriesModalOpen = ref(false);
 const category = ref({ input: ""});
+const isDarkMode = ref(localStorage.getItem("darkMode") === "true");
+
 
 const OpenCategoriesModal = () => {
 category.value = {input: ""};
@@ -79,12 +90,20 @@ const dismiss = () => {
   isAddCategoriesModalOpen.value = false;
 };
 
+const toggleDarkMode = () => {
+    isDarkMode.value = !isDarkMode.value;
+    document.body.classList.toggle("dark-theme", isDarkMode.value);
+    localStorage.setItem("darkMode", isDarkMode.value);
+};
+
 const addCategories = () => {
   if (!category.value.input) return;
 
   const data = { 
     ...category.value
   };
+
+
 
   store.addCategoriesToStore(data); // ✅ Updates Pinia store
   category.value = {};

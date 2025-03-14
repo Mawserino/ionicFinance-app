@@ -28,12 +28,6 @@
             <ion-item button @click="logout">Logout</ion-item>  
           </ion-menu-toggle>
 
-          <ion-menu-toggle auto-hide="true">
-            <ion-item>
-              <ion-label>Night Mode</ion-label>
-              <ion-toggle :checked="isDarkMode" @ionChange="toggleDarkMode"></ion-toggle>
-            </ion-item>
-          </ion-menu-toggle>
 
         </ion-list>
       </ion-content>
@@ -57,13 +51,6 @@ import { ref, watchEffect } from "vue";
 
 const store = userStore(); // Get Pinia store instance
 const router = useRouter();
-const isDarkMode = ref(localStorage.getItem("darkMode") === "true");
-
-const toggleDarkMode = () => {
-    isDarkMode.value = !isDarkMode.value;
-    document.body.classList.toggle("dark-theme", isDarkMode.value);
-    localStorage.setItem("darkMode", isDarkMode.value);
-};
 
 // Ensure correct theme on page load
 watchEffect(() => {
