@@ -70,7 +70,7 @@ import {
   IonMenuToggle, 
   IonButton 
 } from '@ionic/vue';
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, watchEffect } from "vue";
 import { onIonViewWillEnter } from '@ionic/vue';
 import { userStore } from "@/store/user.js";
 
@@ -89,6 +89,10 @@ isAddCategoriesModalOpen.value = true;
 const dismiss = () => {
   isAddCategoriesModalOpen.value = false;
 };
+
+watchEffect(() => {
+    document.body.classList.toggle("dark-theme", isDarkMode.value);
+});
 
 const toggleDarkMode = () => {
     isDarkMode.value = !isDarkMode.value;

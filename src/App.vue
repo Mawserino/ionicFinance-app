@@ -53,9 +53,6 @@ const store = userStore(); // Get Pinia store instance
 const router = useRouter();
 
 // Ensure correct theme on page load
-watchEffect(() => {
-    document.body.classList.toggle("dark-theme", isDarkMode.value);
-});
 
 const logout = async () => {
   try {
